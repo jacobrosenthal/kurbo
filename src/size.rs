@@ -1,8 +1,10 @@
 //! A 2D size.
 
+use libm; ////
 use crate::Vec2;
-use std::fmt;
-use std::ops::{Mul, MulAssign};
+use core::fmt; ////
+////use std::fmt;
+use core::ops::{Mul, MulAssign};
 
 /// A 2D size.
 #[derive(Clone, Copy, Default, PartialEq)]
@@ -52,7 +54,7 @@ impl Size {
     /// integer value.
     #[inline]
     pub fn round(self) -> Size {
-        Size::new(self.width.round(), self.height.round())
+        Size::new(libm::round(self.width), libm::round(self.height))
     }
 }
 

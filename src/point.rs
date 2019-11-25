@@ -1,7 +1,10 @@
 //! A 2D point.
 
-use std::fmt;
-use std::ops::{Add, AddAssign, Sub, SubAssign};
+use libm; ////
+use core::fmt; ////
+////use std::fmt;
+use core::ops::{Add, AddAssign, Sub, SubAssign}; ////
+////use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 use crate::Vec2;
 
@@ -54,7 +57,7 @@ impl Point {
     /// A new `Point`, with each of x and y rounded to the nearest integer value.
     #[inline]
     pub fn round(self) -> Point {
-        Point::new(self.x.round(), self.y.round())
+        Point::new(libm::round(self.x), libm::round(self.y))
     }
 }
 

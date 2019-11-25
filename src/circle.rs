@@ -1,7 +1,10 @@
 //! Implementation of circle shape.
 
-use std::f64::consts::{FRAC_PI_2, PI};
-use std::ops::{Add, Sub};
+use libm; ////
+use core::f64::consts::{FRAC_PI_2, PI}; ////
+////use std::f64::consts::{FRAC_PI_2, PI};
+use core::ops::{Add, Sub}; ////
+////use std::ops::{Add, Sub};
 
 use crate::{PathEl, Point, Rect, Shape, Vec2};
 
@@ -62,16 +65,18 @@ impl Shape for Circle {
     type BezPathIter = CirclePathIter;
 
     fn to_bez_path(&self, tolerance: f64) -> CirclePathIter {
-        let scaled_err = self.radius.abs() / tolerance;
+        let scaled_err = libm::fabs(self.radius) / tolerance;
         let (n, arm_len) = if scaled_err < 1.0 / 1.9608e-4 {
             // Solution from http://spencermortensen.com/articles/bezier-circle/
             (4, 0.551915024494)
         } else {
             // This is empirically determined to fall within error tolerance.
-            let n = (1.1163 * scaled_err).powf(1.0 / 6.0).ceil() as usize;
+            let n = libm::ceil(libm::pow(1.1163 * scaled_err, 1.0 / 6.0)) as usize; ////
+            ////let n = (1.1163 * scaled_err).powf(1.0 / 6.0).ceil() as usize;
             // Note: this isn't minimum error, but it is simple and we can easily
             // estimate the error.
-            let arm_len = (4.0 / 3.0) * (FRAC_PI_2 / (n as f64)).tan();
+            let arm_len = (4.0 / 3.0) * libm::tan(FRAC_PI_2 / (n as f64)); ////
+            ////let arm_len = (4.0 / 3.0) * (FRAC_PI_2 / (n as f64)).tan();
             (n, arm_len)
         };
         CirclePathIter {
@@ -85,16 +90,17 @@ impl Shape for Circle {
 
     #[inline]
     fn area(&self) -> f64 {
-        PI * self.radius.powi(2)
+        PI * libm::pow(self.radius, 2 as f64)
     }
 
     #[inline]
     fn perimeter(&self, _accuracy: f64) -> f64 {
-        (2.0 * PI * self.radius).abs()
+        libm::fabs(2.0 * PI * self.radius) ////
+        ////(2.0 * PI * self.radius).fabs()
     }
 
     fn winding(&self, pt: Point) -> i32 {
-        if (pt - self.center).hypot2() < self.radius.powi(2) {
+        if (pt - self.center).hypot2() < libm::pow(self.radius, 2 as f64) {
             1
         } else {
             0
@@ -103,7 +109,7 @@ impl Shape for Circle {
 
     #[inline]
     fn bounding_box(&self) -> Rect {
-        let r = self.radius.abs();
+        let r = libm::fabs(self.radius);
         let (x, y) = self.center.into();
         Rect::new(x - r, y - r, x + r, y + r)
     }
@@ -127,11 +133,11 @@ impl Iterator for CirclePathIter {
         } else if ix <= self.n {
             let th1 = self.delta_th * (ix as f64);
             let th0 = th1 - self.delta_th;
-            let (c0, s0) = (th0.cos(), th0.sin());
+            let (c0, s0) = (libm::cos(th0), libm::sin(th0));
             let (c1, s1) = if ix == self.n {
                 (1.0, 0.0)
             } else {
-                (th1.cos(), th1.sin())
+                (libm::cos(th1), libm::sin(th1))
             };
             Some(PathEl::CurveTo(
                 Point::new(x + r * (c0 - a * s0), y + r * (s0 + a * c0)),
@@ -149,7 +155,7 @@ impl Iterator for CirclePathIter {
 #[cfg(test)]
 mod tests {
     use crate::{Circle, Point, Shape};
-    use std::f64::consts::PI;
+    use core::f64::consts::PI;
 
     fn assert_approx_eq(x: f64, y: f64) {
         // Note: we might want to be more rigorous in testing the accuracy

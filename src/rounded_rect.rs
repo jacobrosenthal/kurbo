@@ -1,7 +1,9 @@
 //! A rectangle with rounded corners.
 
+use libm; ////
 use crate::{arc::ArcAppendIter, Arc, PathEl, Point, Rect, Shape, Vec2};
-use std::f64::consts::{FRAC_PI_2, PI};
+use core::f64::consts::{FRAC_PI_2, PI}; ////
+////use std::f64::consts::{FRAC_PI_2, PI};
 
 /// A rectangle with equally rounded corners.
 ///
@@ -30,10 +32,16 @@ impl RoundedRect {
     #[inline]
     pub fn from_rect(rect: Rect, radius: f64) -> RoundedRect {
         let rect = rect.abs();
+        let radius = 
+            libm::fabs(radius)
+            .min(rect.width() / 2.0)
+            .min(rect.height() / 2.0); ////
+        /* ////
         let radius = radius
             .abs()
             .min(rect.width() / 2.0)
             .min(rect.height() / 2.0);
+        */ ////
 
         RoundedRect { rect, radius }
     }
@@ -189,8 +197,8 @@ impl Shape for RoundedRect {
 
         // 2. Project point out of the inner rectangle (positive quadrant)
         //    This basically 'substracts' the inner rectangle.
-        let px = (pt.x.abs() - inside_half_width).max(0.0);
-        let py = (pt.y.abs() - inside_half_height).max(0.0);
+        let px = (libm::fabs(pt.x) - inside_half_width).max(0.0);
+        let py = (libm::fabs(pt.y) - inside_half_height).max(0.0);
 
         // 3. The test reduced to calculate the winding of the circle.
         let inside = px * px + py * py <= radius * radius;

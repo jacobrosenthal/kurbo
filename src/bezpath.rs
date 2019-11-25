@@ -1,6 +1,7 @@
 //! Bézier paths (up to cubic).
 
-use std::ops::{Mul, Range};
+use core::ops::{Mul, Range}; ////
+                             ////use std::ops::{Mul, Range};
 
 use arrayvec::ArrayVec;
 
@@ -13,7 +14,10 @@ use crate::{
 
 /// A path that can Bézier segments up to cubic, possibly with multiple subpaths.
 #[derive(Clone, Default, Debug)]
-pub struct BezPath(Vec<PathEl>);
+pub struct BezPath(ArrayVec<PathElArray>); ////
+pub type PathElArray = [PathEl; MAX_BEZ_PATH]; ////
+pub const MAX_BEZ_PATH: usize = 16; //// Max 16 items supported in a path
+                                    ////pub struct BezPath(Vec<PathEl>);
 
 /// The element of a Bézier path.
 ///
@@ -53,7 +57,8 @@ impl BezPath {
     /// let as_vec: Vec<PathEl> = path.into_iter().collect();
     /// let back_to_path: BezPath = as_vec.into_iter().collect();
     /// ```
-    pub fn from_vec(v: Vec<PathEl>) -> BezPath {
+    pub fn from_vec(v: ArrayVec<PathElArray>) -> BezPath {
+        ////pub fn from_vec(v: Vec<PathEl>) -> BezPath {
         BezPath(v)
     }
 
@@ -195,7 +200,8 @@ impl std::iter::FromIterator<PathEl> for BezPath {
 #[deprecated(since = "0.5.6", note = "use BezPath::iter instead")]
 impl<'a> IntoIterator for &'a BezPath {
     type Item = PathEl;
-    type IntoIter = std::iter::Cloned<std::slice::Iter<'a, PathEl>>;
+    type IntoIter = core::iter::Cloned<core::slice::Iter<'a, PathEl>>; ////
+                                                                       ////type IntoIter = std::iter::Cloned<core::slice::Iter<'a, PathEl>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.elements().iter().cloned()
@@ -263,7 +269,8 @@ impl<'a> Mul<&'a BezPath> for TranslateScale {
 }
 
 struct BezPathSegs<'a> {
-    c: std::slice::Iter<'a, PathEl>,
+    c: core::slice::Iter<'a, PathEl>, ////
+    ////c: std::slice::Iter<'a, PathEl>,
     start: Point,
     last: Point,
 }
@@ -528,7 +535,8 @@ impl From<QuadBez> for PathSeg {
 }
 
 impl Shape for BezPath {
-    type BezPathIter = std::vec::IntoIter<PathEl>;
+    type BezPathIter = arrayvec::IntoIter<PathElArray>; ////
+                                                        ////type BezPathIter = std::vec::IntoIter<PathEl>;
 
     fn to_bez_path(&self, _tolerance: f64) -> Self::BezPathIter {
         self.clone().0.into_iter()
@@ -558,7 +566,7 @@ impl Shape for BezPath {
 }
 
 impl<'a> Shape for &'a [PathEl] {
-    type BezPathIter = std::iter::Cloned<std::slice::Iter<'a, PathEl>>;
+    type BezPathIter = core::iter::Cloned<core::slice::Iter<'a, PathEl>>;
 
     #[inline]
     fn to_bez_path(&self, _tolerance: f64) -> Self::BezPathIter {

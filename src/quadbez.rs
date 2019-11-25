@@ -1,6 +1,8 @@
 //! Quadratic Bézier segments.
 
-use std::ops::{Mul, Range};
+use libm; ////
+use core::ops::{Mul, Range}; ////
+////use std::ops::{Mul, Range};
 
 use arrayvec::ArrayVec;
 
@@ -128,10 +130,10 @@ impl ParamCurveArclen for QuadBez {
         }
         let b = 2.0 * d2.dot(d1);
 
-        let sabc = (a + b + c).sqrt();
-        let a2 = a.powf(-0.5);
-        let a32 = a2.powi(3);
-        let c2 = 2.0 * c.sqrt();
+        let sabc = libm::sqrt(a + b + c);
+        let a2 = libm::pow(a, -0.5 as f64);
+        let a32 = libm::pow(a2, 3 as f64);
+        let c2 = 2.0 * libm::sqrt(c);
         let ba_c2 = b * a2 + c2;
 
         let v0 = 0.25 * a2 * a2 * b * (2.0 * sabc - c2) + sabc;
@@ -143,7 +145,8 @@ impl ParamCurveArclen for QuadBez {
             v0 + 0.25
                 * a32
                 * (4.0 * c * a - b * b)
-                * (((2.0 * a + b) * a2 + 2.0 * sabc) / ba_c2).ln()
+                * libm::log(((2.0 * a + b) * a2 + 2.0 * sabc) / ba_c2) ////
+                ////* (((2.0 * a + b) * a2 + 2.0 * sabc) / ba_c2).ln()
         }
     }
 }
@@ -273,7 +276,7 @@ mod tests {
     #[test]
     fn quadbez_arclen() {
         let q = QuadBez::new((0.0, 0.0), (0.0, 0.5), (1.0, 1.0));
-        let true_arclen = 0.5 * 5.0f64.sqrt() + 0.25 * (2.0 + 5.0f64.sqrt()).ln();
+        let true_arclen = 0.5 * libm::sqrt(5.0f64) + 0.25 * (2.0 + libm::sqrt(5.0f64)).ln();
         for i in 0..12 {
             let accuracy = 0.1f64.powi(i);
             let est = q.arclen(accuracy);

@@ -1,7 +1,10 @@
 //! A simple 2D vector.
 
-use std::fmt;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use libm; ////
+use core::fmt; ////
+////use std::fmt;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}; ////
+////use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 use crate::{Point, Size};
 
@@ -55,7 +58,8 @@ impl Vec2 {
     /// Magnitude of vector.
     #[inline]
     pub fn hypot(&self) -> f64 {
-        self.x.hypot(self.y)
+        libm::hypot(self.x, self.y) ////
+        ////self.x.hypot(self.y)
     }
 
     /// Magnitude squared of vector.
@@ -70,7 +74,8 @@ impl Vec2 {
     /// The angle is expressed in radians.
     #[inline]
     pub fn atan2(&self) -> f64 {
-        self.y.atan2(self.x)
+        libm::atan2(self.y, self.x) ////
+        ////self.y.atan2(self.x)
     }
 
     /// A unit vector of the given angle.
@@ -86,8 +91,8 @@ impl Vec2 {
     #[inline]
     pub fn from_angle(th: f64) -> Vec2 {
         Vec2 {
-            x: th.cos(),
-            y: th.sin(),
+            x: libm::cos(th),
+            y: libm::sin(th),
         }
     }
 
@@ -109,7 +114,8 @@ impl Vec2 {
     /// Returns a new `Vec2` with each of `x` and `y` rounded to the nearest integer.
     #[inline]
     pub fn round(self) -> Vec2 {
-        Vec2::new(self.x.round(), self.y.round())
+        Vec2::new(libm::round(self.x), libm::round(self.y)) ////
+        ////Vec2::new(self.x.round(), self.y.round())
     }
 
     /// Returns a new `Vec2` where each of `x` and `y`, with a non-zero fractional
@@ -126,7 +132,8 @@ impl Vec2 {
     /// ```
     #[inline]
     pub fn ceil(self) -> Vec2 {
-        Vec2::new(self.x.ceil(), self.y.ceil())
+        Vec2::new(libm::ceil(self.x), libm::ceil(self.y)) ////
+        ////Vec2::new(self.x.ceil(), self.y.ceil())
     }
 
     /// Returns a new `Vec2` where each of `x` and `y`, with a non-zero fractional
@@ -143,7 +150,8 @@ impl Vec2 {
     /// ```
     #[inline]
     pub fn floor(self) -> Vec2 {
-        Vec2::new(self.x.floor(), self.y.floor())
+        Vec2::new(libm::floor(self.x), libm::floor(self.y)) ////
+        ////Vec2::new(self.x.floor(), self.y.floor())
     }
 }
 

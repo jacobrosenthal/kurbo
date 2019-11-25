@@ -18,6 +18,8 @@
 //! vector paths. It is probably most appropriate for creative tools,
 //! but is general enough it might be useful for other applications.
 
+#![no_std] ////
+#![warn(clippy::all)] ////
 mod affine;
 mod arc;
 mod bezpath;
@@ -33,7 +35,7 @@ mod rect;
 mod rounded_rect;
 mod shape;
 mod size;
-mod svg;
+////mod svg;
 mod translate_scale;
 mod vec2;
 
@@ -51,6 +53,6 @@ pub use crate::rect::*;
 pub use crate::rounded_rect::*;
 pub use crate::shape::*;
 pub use crate::size::*;
-pub use crate::svg::*;
+////pub use crate::svg::*;
 pub use crate::translate_scale::*;
 pub use crate::vec2::*;
