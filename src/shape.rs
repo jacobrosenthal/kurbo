@@ -1,6 +1,8 @@
 //! A generic trait for shapes.
 
 use crate::{BezPath, Circle, Line, PathEl, Point, Rect, RoundedRect};
+use crate::PathElArray; ////
+use arrayvec::ArrayVec; ////
 
 /// A generic trait for open and closed shapes.
 pub trait Shape: Sized {
@@ -38,7 +40,13 @@ pub trait Shape: Sized {
     /// [`to_bez_path()`](#tymethod.to_bez_path).
     fn into_bez_path(self, tolerance: f64) -> BezPath {
         let vec = if let Some(slice) = self.as_path_slice() {
-            Vec::from(slice)
+            ////  TODO: Optimise copying into ArrayVec
+            let mut a = ArrayVec::<PathElArray>::new(); ////
+            for el in slice { 
+                a.try_push(*el).expect("BEZ_PATH_SIZE too small")
+            }
+            a ////
+            ////Vec::from(slice)
         } else {
             self.to_bez_path(tolerance).collect()
         };

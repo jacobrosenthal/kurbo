@@ -1,12 +1,15 @@
 //! Affine transforms.
 
-use std::ops::{Mul, MulAssign};
+use libm; ////
+use core::ops::{Mul, MulAssign}; ////
+////use std::ops::{Mul, MulAssign};
 
 use crate::{Point, Rect, Vec2};
 
 /// A 2D affine transform.
 #[derive(Clone, Copy, Debug)]
-pub struct Affine([f64; 6]);
+pub struct Affine(pub [f64; 6]); ////
+////pub struct Affine([f64; 6]);
 
 impl Affine {
     /// A transform that is flipped on the y-axis. Useful for converting between
@@ -54,8 +57,10 @@ impl Affine {
     /// The angle, `th`, is expressed in radians.
     #[inline]
     pub fn rotate(th: f64) -> Affine {
-        let s = th.sin();
-        let c = th.cos();
+        let s = libm::sin(th);
+        ////let s = th.sin();
+        let c = libm::cos(th);
+        ////let c = th.cos();
         Affine([c, s, -s, c, 0.0, 0.0])
     }
 
@@ -199,7 +204,8 @@ impl From<mint::ColumnMatrix2x3<f64>> for Affine {
 #[cfg(test)]
 mod tests {
     use crate::{Affine, Point};
-    use std::f64::consts::PI;
+    use core::f64::consts::PI; ////
+    ////use std::f64::consts::PI;
 
     fn assert_near(p0: Point, p1: Point) {
         assert!((p1 - p0).hypot() < 1e-9, "{:?} != {:?}", p0, p1);

@@ -1,6 +1,9 @@
 //! Cubic Bézier segments.
 
-use std::ops::{Mul, Range};
+use libm; ////
+use core::ops::{Mul, Range}; ////
+////use std::ops::{Mul, Range};
+use introsort; ////
 
 use crate::MAX_EXTREMA;
 use arrayvec::ArrayVec;
@@ -144,7 +147,8 @@ impl ParamCurveArclen for CubicBez {
             let lc = (c.p3 - c.p0).hypot();
             let lp = (c.p1 - c.p0).hypot() + (c.p2 - c.p1).hypot() + (c.p3 - c.p2).hypot();
 
-            2.56e-8 * (cubic_errnorm(c) / (lc * lc)).powi(8) * lp
+            2.56e-8 * libm::pow(cubic_errnorm(c) / (lc * lc), 8 as f64) * lp ////
+            ////2.56e-8 * (cubic_errnorm(c) / (lc * lc)).powi(8) * lp
         }
         const MAX_DEPTH: usize = 16;
         fn rec(c: &CubicBez, accuracy: f64, depth: usize) -> f64 {
@@ -202,13 +206,15 @@ impl ParamCurveExtrema for CubicBez {
                 }
             }
         }
-        let mut result = ArrayVec::new();
+        let mut result = ArrayVec::<[f64; MAX_EXTREMA]>::new(); ////
+        ////let mut result = ArrayVec::new();
         let d0 = self.p1 - self.p0;
         let d1 = self.p2 - self.p1;
         let d2 = self.p3 - self.p2;
         one_coord(&mut result, d0.x, d1.x, d2.x);
         one_coord(&mut result, d0.y, d1.y, d2.y);
-        result.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        introsort::sort_by(&mut result, &|a, b| a.partial_cmp(b).unwrap()); ////
+        ////result.sort_by(|a, b| a.partial_cmp(b).unwrap());
         result
     }
 }
@@ -251,7 +257,8 @@ impl Iterator for ToQuads {
                 let shrink = if t1 == 1.0 && err < 64.0 * self.max_hypot2 {
                     0.5
                 } else {
-                    0.999_999 * (self.max_hypot2 / err).powf(1. / 6.0)
+                    0.999_999 * libm::pow(self.max_hypot2 / err, 1. / 6.0) ////
+                    ////0.999_999 * (self.max_hypot2 / err).powf(1. / 6.0)
                 };
                 t1 = t0 + shrink * (t1 - t0);
             }
@@ -298,7 +305,7 @@ mod tests {
             (2.0 / 3.0, 1.0 / 3.0),
             (1.0, 1.0),
         );
-        let true_arclen = 0.5 * 5.0f64.sqrt() + 0.25 * (2.0 + 5.0f64.sqrt()).ln();
+        let true_arclen = 0.5 * libm::sqrt(5.0f64) + 0.25 * (2.0 + libm::sqrt(5.0f64)).ln();
         for i in 0..12 {
             let accuracy = 0.1f64.powi(i);
             let error = c.arclen(accuracy) - true_arclen;
@@ -316,7 +323,7 @@ mod tests {
             (2.0 / 3.0, 1.0 / 3.0),
             (1.0, 1.0),
         );
-        let true_arclen = 0.5 * 5.0f64.sqrt() + 0.25 * (2.0 + 5.0f64.sqrt()).ln();
+        let true_arclen = 0.5 * libm::sqrt(5.0f64) + 0.25 * (2.0 + libm::sqrt(5.0f64)).ln();
         for i in 0..12 {
             let accuracy = 0.1f64.powi(i);
             let n = 10;

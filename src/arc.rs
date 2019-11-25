@@ -1,7 +1,9 @@
 //! A circle arc.
 
+use libm; ////
 use crate::{PathEl, Point, Vec2};
-use std::f64::consts::{FRAC_PI_2, PI};
+use core::f64::consts::{FRAC_PI_2, PI}; ////
+////use std::f64::consts::{FRAC_PI_2, PI};
 
 /// A single arc segment.
 #[derive(Clone, Copy, Debug)]
@@ -13,20 +15,29 @@ pub struct Arc {
     pub x_rotation: f64,
 }
 
+fn signum(x: f64) -> f64 { ////
+    if x >= 0 as f64 { 1 as f64 }
+    else { -1 as f64 }
+}
+
 impl Arc {
     /// Create an iterator generating Bezier path elements.
     ///
     /// The generated elemets can be append to an existing bezier path.
     pub fn append_iter(&self, tolerance: f64) -> ArcAppendIter {
-        let sign = self.sweep_angle.signum();
+        let sign = signum(self.sweep_angle); ////
+        ////let sign = self.sweep_angle.signum();
         let scaled_err = self.radii.x.max(self.radii.y) / tolerance;
         // Number of subdivisions per circle based on error tolerance.
         // Note: this may slightly underestimate the error for quadrants.
-        let n_err = (1.1163 * scaled_err).powf(1.0 / 6.0).max(3.999_999);
-        let n = (n_err * self.sweep_angle.abs() * (1.0 / (2.0 * PI))).ceil();
+        let n_err = libm::pow(1.1163 * scaled_err, 1.0 / 6.0).max(3.999_999); ////
+        ////let n_err = (1.1163 * scaled_err).powf(1.0 / 6.0).max(3.999_999);
+        let n = libm::ceil(n_err * libm::fabs(self.sweep_angle) * (1.0 / (2.0 * PI))); ////
+        ////let n = (n_err * self.sweep_angle.abs() * (1.0 / (2.0 * PI))).ceil();
         let angle_step = self.sweep_angle / n;
         let n = n as usize;
-        let arm_len = (4.0 / 3.0) * (0.25 * angle_step).abs().tan() * sign;
+        let arm_len = (4.0 / 3.0) * libm::tan(libm::fabs(0.25 * angle_step)) * sign; ////
+        ////let arm_len = (4.0 / 3.0) * (0.25 * angle_step).abs().tan() * sign;
         let angle0 = self.start_angle;
         let p0 = sample_ellipse(self.radii, self.x_rotation, angle0);
 
@@ -103,14 +114,14 @@ impl Iterator for ArcAppendIter {
 }
 
 fn sample_ellipse(radii: Vec2, x_rotation: f64, angle: f64) -> Vec2 {
-    let u = radii.x * angle.cos();
-    let v = radii.y * angle.sin();
+    let u = radii.x * libm::cos(angle);
+    let v = radii.y * libm::sin(angle);
     rotate_pt(Vec2::new(u, v), x_rotation)
 }
 
 fn rotate_pt(pt: Vec2, angle: f64) -> Vec2 {
     Vec2::new(
-        pt.x * angle.cos() - pt.y * angle.sin(),
-        pt.x * angle.sin() + pt.y * angle.cos(),
+        pt.x * libm::cos(angle) - pt.y * libm::sin(angle),
+        pt.x * libm::sin(angle) + pt.y * libm::cos(angle),
     )
 }
