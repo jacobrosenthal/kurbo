@@ -187,12 +187,12 @@ impl BezPath {
     }
 }
 
-impl std::iter::FromIterator<PathEl> for BezPath {
-    fn from_iter<T: IntoIterator<Item = PathEl>>(iter: T) -> Self {
-        let el_vec: Vec<_> = iter.into_iter().collect();
-        BezPath::from_vec(el_vec)
-    }
-}
+// impl std::iter::FromIterator<PathEl> for BezPath {
+//     fn from_iter<T: IntoIterator<Item = PathEl>>(iter: T) -> Self {
+//         let el_vec: Vec<_> = iter.into_iter().collect();
+//         BezPath::from_vec(el_vec)
+//     }
+// }
 
 // this has weird semantics; signature assumes taking ownership but impl'd on a reference
 // NOTE: after removing this, we should impl IntoIterator for BezPath (with no reference)
